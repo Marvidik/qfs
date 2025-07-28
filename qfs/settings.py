@@ -155,5 +155,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 465
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
-EMAIL_HOST_USER = 'meshackchristian0@gmail.com'  # Replace with your Gmail address
-EMAIL_HOST_PASSWORD = 'jdtq qthh fjai njno'   # Replace with your Gmail App Password
+EMAIL_HOST_USER = 'qfssystem0@gmail.com'  # Replace with your Gmail address
+EMAIL_HOST_PASSWORD = 'jwtk xckh lckc xtee'   # Replace with your Gmail App Password
