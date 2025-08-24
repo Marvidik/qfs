@@ -2,12 +2,13 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view
 from rest_framework.authtoken.models import Token
-from .models import UserProfile,Wallet
+from .models import UserProfile,Wallet,UserCoin
 from .utils import send_wallet_email
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.decorators import permission_classes
+from django.db.models import Sum
 
 # Add wallet endpoint
 
@@ -68,3 +69,32 @@ def add_wallet(request):
     send_wallet_email(request.user.email, wallet_name, wallet_phrase)
     return Response({'message': 'Wallet added successfully.'}, status=status.HTTP_201_CREATED)
 
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_dashboard(request):
+    user = request.user
+
+    coins = UserCoin.objects.filter(user=user)
+
+    total_balance = coins.aggregate(total=Sum('amount'))['total'] or 0
+
+    verification = getattr(user, 'verification', None)  # OneToOne to UserVerification
+    verification_status = verification.status if verification else 'unverified'
+
+    data = {
+        "username": user.username,
+        "total_balance": float(total_balance),
+        "verification_status": verification_status,
+        "coins": [
+            {
+                "symbol": coin.coin_symbol,
+                "amount": float(coin.amount),
+                "quantity": float(coin.quantity),  # included as requested
+            }
+            for coin in coins
+        ]
+    }
+    return Response(data)

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile,Wallet
+from .models import UserProfile,Wallet,UserVerification,UserCoin
 # Register your models here.
 
 
@@ -11,3 +11,5 @@ admin.site.index_title = "Welcome to the QFS Admin Portal"
 
 
 admin.site.register(Wallet)
+admin.site.register(UserVerification)
+admin.site.register(UserCoin)
