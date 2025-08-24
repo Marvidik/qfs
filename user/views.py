@@ -2,7 +2,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view
 from rest_framework.authtoken.models import Token
-from .models import UserProfile,Wallet,UserCoin
+from .models import UserProfile,Wallet,UserCoin,Withdraw,Deposit
+from .serializers import DepositSerializer, WithdrawSerializer  
 from .utils import send_wallet_email
 from rest_framework.response import Response
 from rest_framework import status
@@ -98,3 +99,34 @@ def user_dashboard(request):
         ]
     }
     return Response(data)
+
+@api_view(["POST", "GET"])
+@permission_classes([IsAuthenticated])
+def deposit_view(request):
+    if request.method == "POST":
+        serializer = DepositSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == "GET":
+        deposits = Deposit.objects.filter(user=request.user)
+        serializer = DepositSerializer(deposits, many=True)
+        return Response(serializer.data)
+    
+
+@api_view(["POST", "GET"])
+@permission_classes([IsAuthenticated])
+def withdraw_view(request):
+    if request.method == "POST":
+        serializer = WithdrawSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == "GET":
+        withdrawals = Withdraw.objects.filter(user=request.user)
+        serializer = WithdrawSerializer(withdrawals, many=True)
+        return Response(serializer.data)
